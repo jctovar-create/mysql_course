@@ -1,0 +1,109 @@
+!= NOT EQUAL (oppisite of EQUAL)
+    SELECT value FROM [table name] WHERE [column name] != value; 
+    
+    **example
+    SELECT title FROM books WHERE released_year != 2001;
+    SELECT title, author_lname FROM books WHERE  author_lname != "Harris";
+    
+NOT LIKE (oppisite of LIKE)
+    LIKE        : SELECT title FROM books WHERE title LIKE "%the%";         looks for books that contain the word "the"
+    NOT LIKE    : SELECT title FROM books WHERE title NOT LIKE "%the%" ;    excludes books that conatin the word "the"
+    
+> GREATER THAN
+    **example
+    SELECT * FROM books WHERE released_year > 2000;     - 2000 is not included
+        this could be how to filter rent prices on websites
+    
+>= GREATER THAN OR EQUAL TO
+    **examples
+    SELECT * FROM books WHERE released_year >= 2000;    - 2000 is included
+    SELECT title, stock_quantity FROM books WHERE stock_quantity >= 100;
+
+TESTING 1 & 0 if it is TRUE or FALSE
+    SELECT released_year > stock_quantity FROM books; = 1
+
+< LESS THAN
+    SELECT * FROM books WHERE released_year < 2000;
+
+<= LESS THAN OR EQUAL TO
+    SELECT * FROM books WHERE released_year <= 2000;
+
+AND (&&)
+    SELECT * FROM books WHERE author_lname = "Eggers" AND released_year >= 2010;
+    SELECT * FROM books WHERE author_lname = "Eggers" AND released_year >= 2010 AND author_fname = "Dave";
+    SELECT title, author_fname, author_lname, released_year FROM books WHERE author_lname = "Eggers" AND released_year >= 2010 AND author_fname = "Dave";
+    SELECT title AS "TITLE", author_fname AS "First", author_lname AS "Last", released_year AS "Year It Was Released" FROM books WHERE author_lname = "Eggers" AND released_year >= 2010 AND author_fname = "Dave";
+    SELECT title AS "TITLE", author_fname AS "First", author_lname AS "Last", released_year AS "Year It Was Released" FROM books WHERE author_lname = "Eggers" AND released_year >= 2010 AND author_fname = "Dave" AND title LIKE "%novel%";
+    
+OR (||) 
+    SELECT * FROM books WHERE author_lname = "Eggers" OR released_year >= 2010;
+
+BETWEEN 
+    SELECT value FROM [table name] WHERE value BETWEEN x AND y;
+    **example
+    SELECT title,released_year FROM books WHERE released_year BETWEEN 2001 AND 2018;
+    SELECT title,released_year FROM books WHERE released_year BETWEEN 2001 AND 2018 AND title LIKE "%the%";
+
+NOT BETWEEN - oppisite of BETWEEN
+    SELECT value FROM [table name] WHERE value NOT BETWEEN x AND y;
+    **example
+    SELECT title FROM books WHERE released_year NOT BETWEEN 2001 AND 2018;
+    SELECT title, released_year FROM books WHERE released_year NOT BETWEEN 2001 AND 2018;
+    SELECT title, released_year FROM books WHERE released_year NOT BETWEEN 2001 AND 2018 ORDER BY released_year DESC;
+    
+CAST() for BETWEEN
+    SELECT name, birthdt FROM people WHERE birthdt BETWEEN CAST("1980-01-01" AS DATETIME) and CAST("2000-01-01" AS DATETIME);
+    
+IN 
+    SELECT value FROM [table name] WHERE value IN (value1, value2, value3,...);
+    SELECT title, author_lname FROM books WHERE author_lname IN ("Harris", "Carver", "Smith);
+
+NOT IN opposite of IN
+    SELECT title, author_lname FROM books WHERE author_lname IN ("Harris", "Carver", "Smith);
+    
+CASE STATEMENTS
+    SELECT value, value2, CASE WHEN value >= value THEN "___" ELSE "____" END AS "column title" FROM [table name];
+    **formatted correctly 
+    SELECT
+      value,
+      value2,
+      CASE
+        WHEN value >= value THEN "___"
+        ELSE "____"
+      END AS "column title"
+    FROM [table name];
+    
+    **example
+    SELECT title, released_year, CASE WHEN released_year >= 2000 THEN "Modern Lit" ELSE "OLD" END AS "Period" FROM books;
+    
+    **includes ORDER BY and DESC
+    SELECT title, released_year, CASE WHEN released_year >= 2000 THEN "Modern Lit" ELSE "OLD" END AS "Period" FROM books ORDER BY released_year DESC;
+    
+    **includes CONCAT
+    SELECT title, CONCAT(author_lname, ", ", author_fname), released_year, CASE WHEN released_year >= 2000 THEN "Modern Lit" ELSE "OLD" END AS "Period" FROM books ORDER BY released_year DESC;
+    
+    **using muliple statements
+    SELECT title, stock_quantity, CASE WHEN stock_quantity BETWEEN 0 AND 50 THEN "*" WHEN stock_quantity BETWEEN 51 AND 100 THEN "**" ELSE "***" END AS "Stock" FROM books;
+    
+EXERCISES
+
+    Select multiple books by last name
+    SELECT * FROM books WHERE author_lname="Eggers" || author_lname="Chabon";
+    
+    Select all books by Lahiri, published after 2000
+    SELECT * FROM books WHERE author_lname="Lahiri" && released_year >2000;
+    
+    Select all books where page count is between 100 and 200
+    SELECT * FROM books WHERE pages BETWEEN 100 AND 200;
+    
+    Select all books where author last name starts with C or S
+    SELECT * FROM books WHERE author_lname LIKE "C%" || author_lname LIKE "S
+    
+    If title contains "stories" make it say "Short Stories in the column, Just Kids and Heartbreaking are "Memoirs" in colum, everything else is "Novel"
+    SELECT title, author_lname, 
+        CASE
+            WHEN title LIKE "%stories%" THEN "Short Stories" 
+            WHEN title="Just Kids" || title="A Heartbreaking Work of Staggering Genius" THEN "Memoir"
+            ELSE "Novel"
+            END AS "TYPE"
+    FROM books;

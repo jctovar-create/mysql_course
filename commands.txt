@@ -1,0 +1,326 @@
+CREATE DATABASE [database name];
+
+CREATE TABLE [table name] (name VARCHAR(50), age INT);
+    
+    **creating a table if items are not allowed to be null
+        CREATE TABLE [table name] (name VARCHAR(20) NOT NULL, age INT NOT NULL);
+        
+    **creating a table where items have default values
+        CREATE TABLE [table name] (name VARCHAR(30) DEFAULT "unnamed", age INT DEFAULT 99);
+        
+    **creating a table where items have default values and are not allowed to be Null
+        CREATE TABLE [table name] (name VARCHAR (20) NOT NULL DEFAULT "unnamed", age INT NOT NULL DEFAULT 99);
+        
+    **creating a table - NOT NULL with a Primary Key -- CANNOT BE NULL BECAUSE PRIMARY KEYS CANNOT HAVE THE SAME VALUE
+        CREATE TABLE [table name] (item_id INT NOT NULL, name VARCHAR(20), age INT, PRIMARY KEY (item_id));
+        
+    **creating a table that auto increments the PRIMARY KEY 
+        CREATE TABLE [table name] (item_id INT NOT NULL AUTO_INCREMENT, name VARCHAR(20), age INT, PRIMARY KEY (item_id));
+        
+USE [database name];
+SHOW DATABASES;                     
+SHOW TABLES;
+DESC [table name];
+SHOW COLUMNS FROM [table name];     == BASICALLY DESCRIBE THE DATABASE
+DROP DATABASE [database name];
+DROP TABLE [table name];            == DELETE DATABASE
+SELECT DATABASE();                  == SHOW WHAT DATABASE YOU'RE WORKING IN 
+
+INSERT DATA: 
+
+    INSERT INTO [database name] (value1, value2) VALUES (value1, value2);
+    
+        **in case you want to insert multiple attributes into the database:
+            INSERT INTO [table name] (value1, value2) VALUES (value1, value2), (value1, value2);
+        
+SELECT * FROM [table name];                 == give you all columns
+
+SELECT [column name] FROM [table name]      == gives you that column 
+
+    ** if you want to select more than one column
+    SELECT [column name], [column name] FROM [table name]
+    
+    **when you want to filter
+    SELECT [column name] FROM [table name] WHERE [column name]=[value];
+
+SHOW WARNINGS;                      == if you want to see warnings, only works right after if happens, wont work if you select * from table;
+
+ALIASES:
+    SELECT [column name] AS [alias name] FROM [table name];
+    
+UPDATE: 
+    UPDATE [table name] SET [column name]=[new value] WHERE [column name]=[old value];
+    
+    **updating multiple columns
+    UPDATE [table name] SET [column name]=[new value], [column name]=[new value] WHERE [column name]=[old value];
+    
+DELETE: 
+    DELETE FROM [table name] WHERE [column name]=[value];
+    
+    **deleting all entries from the table, we still have the table itself though
+    DELETE FROM [table name];
+    
+WHERE: filtering by a value to find item(s) in table
+    
+    SELECT * FROM [table name] WHERE key="value";
+    
+    **example
+    SELECT title FROM books WHERE released_year=2001;
+    SELECT title,stock_quantity FROM books WHERE released_year=2001;
+    
+RUNNING A SQL FILE - MUST BE IN A DATABASE
+    source [filename]
+    
+    **need to be in correct directory. If you file is in a subfolder you need to run this
+    source [rootfolder/filename];
+
+CONCATinating values from the database:
+CONCAT()    : normal concat
+CONCAT_WS   : will insert something in between each value
+
+    SELECT CONCAT(value1, value2) FROM [table name];
+    
+    **if you want to make it a sentence
+    SELECT CONCAT(value1, " is value 1, and value 2 is ", value2) FROM [table name];
+    
+    **if you want to give the concatination a name
+    SELECT CONCAT(value1, " is value 1, and value 2 is ", value2) AS "full name"   FROM [table name];
+    
+    **Mixing Concatination with regular selecting
+    SELECT  author_fname AS "first", author_lname AS "last", CONCAT(author_lname, ", ", author_fname) AS "full" FROM books;
+    
+    **Using CONCAT_WS
+    SELECT CONCAT_WS(" - ", author_fname, author_lname) FROM books;
+
+Selecting a Substring:
+    MySQL starts at 1, not 0.
+    
+    SELECT SUBSTRING("Hello World", 1, 4); goes from first to fourth character.
+    SELECT SUBSTRING("Hello World", 3, 8); goes from third to eighth character.
+    SELECT SUBSTRING("Hello World", 4); goes from fourth character until the end of string.
+    SELECT SUBSTRING("Hello World", -4); goes from negative 4 until the end of string.
+    
+    **selecting a substring from a key:
+    SELECT SUBSTRING(key, 1, 10) FROM [table name];
+    
+    **selecting a substring from a key and giving it a nickname:
+    SELECT SUBSTRING(key, 1, 10) AS "short title" FROM [table name];
+    
+    SUBSTR() also works.
+    
+COMBINING SUBSTRING AND CONCAT
+
+    SELECT CONCAT(SUBSTRING(title, 1, 10), "...") FROM [table name];
+    
+    **with a nickname
+    SELECT CONCAT(SUBSTRING(title, 1, 10), "...") AS "concat substring" FROM [table name];
+
+Replacing values : This is case sensative.
+
+    SELECT REPLACE("Hello World", "Hell", "%S#@");
+    
+    **7's instead of "l"s
+    SELECT REPLACE("Hello World", "l", "7");
+    
+    ** Replacing all spaces with "and" lol
+    SELECT REPLACE("cheese bread coffee milk", " ", " and ");
+    
+    **replacing from a dataset
+    SELECT REPLACE(value name, "e", "3") FROM [table name];
+
+You can combine SUBSTRING AND REPLACE
+
+    SELECT SUBSTRING(REPLACE(title, "e", "3"), 1, 10) AS "substring and replace" FROM books;
+    
+You can combine CONCAT, SUBSTRING, AND REPLACE
+
+    SELECT CONCAT(SUBSTRING(REPLACE(title, "e", "3"), 1, 10), "...") AS "substring and replace and concat" FROM books;
+
+Reversing Strings
+    
+    SELECT REVERSE("HELLO WORLD");
+    
+    **if you want to CONCAT and REVERSE
+    SELECT CONCAT("My first name reversed is: ", REVERSE(author_lname)) AS "first reversed" FROM books;
+    
+Viewing Character Length
+
+    CHAR_LENGTH("HELLO WORLD");     will result 11
+    
+    **making it useful with CONCAT
+    SELECT CONCAT(title, " is ", CHAR_LENGTH(title), " many characters") AS "character length" FROM books;
+
+Making a string UPPER or lower case
+            Important Note: UPPER and LOWER only take ONE argument. You can't make a concatination of a whole sentence be upper if UPPER in inside CONCAT. UPPER needs to be outside.
+            
+    SELECT UPPER("Hello World");
+    SELECT LOWER("Hello World");
+    
+    SELECT UPPER(value name) from [table name];
+    SELECT LOWER(value name) from [table name];
+    
+    **CONCAT and UPPER/Lower
+    SELECT CONCAT(UPPER(title), " is my favorite book!") AS "yelling name" FROM books;
+    SELECT CONCAT(LOWER(title), " is my favorite book!") AS "yelling name" FROM books;
+
+DISTINCT : every result will be different, it will remove the duplicates
+
+    SELECT DISTINCT [value] FROM [table name];
+    
+    **if we want to check first and last name
+    SELECT DISTINCT author_fname, author_lname FROM books;
+    SELECT DISTINCT CONCAT(author_fname, author_lname) FROM books;
+    
+ORDER BY : Sort in a particular way
+    SELECT [value] FROM [table name] ORDER BY [value];
+    
+    **example
+    SELECT title FROM books ORDER BY title;
+        **will by default give it to us in ascending order
+    
+    **REVERSE ORDER
+    SELECT title FROM books ORDER BY title DESC;
+    
+    **select and order multiple values
+    SELECT value1, value2, value3 FROM [table name] ORDER BY 2; 2 refers to the second value passed = value2
+
+LIMIT results (like top 10) 
+
+    SELECT value FROM [table name] LIMIT X; X is an INT
+    
+    **example
+    SELECT title FROM books LIMIT 3;
+    SELECT * FROM books LIMIT 1;
+    
+    **meaningful example with other things
+    SELECT title FROM books ORDER BY stock_quantity DESC LIMIT 10;
+    SELECT title, released_year FROM books ORDER BY released_year DESC LIMIT 7;
+    SELECT title, released_year FROM books ORDER BY released_year DESC LIMIT 0,5; starting point and how many we want to go from there.
+    SELECT title, released_year FROM books ORDER BY released_year DESC LIMIT 10,4; starting point and how many we want to go from there.
+
+LIKE: search for value that is LIKE the value
+    
+    WHERE value LIKE "%insert%";
+    SELECT * FROM [table name] WHERE value LIKE "%insert%";
+    
+    **example : will return all results where "da" is included (frieda ends with "da", so that will be returned to us)
+    SELECT * FROM books WHERE author_fname LIKE "%da%";
+    SELECT title,author_fname FROM books WHERE author_fname LIKE "%da%";
+    
+    **example : if you delete the first percentage sign that will only return results that START with "da"
+    SELECT * FROM books WHERE author_fname LIKE "da%";
+    
+    SELECT title FROM books WHERE title LIKE "%the%";
+    
+    DIFFERENT TYPE OF LIKE
+    
+    SELECT value FROM [table name] WHERE value LIKE "____"  -Those are underscores, so it will search for a value that has that many characters
+    
+    **if we have a value with "%" or "_" in it
+    SELECT title FROM books WHERE title LIKE "%\%%";
+    SELECT title FROM books WHERE title LIKE "%\_%";
+
+COMBING A LOT OF THESE FUNCTIONS
+
+    Concatinate, Rename Column, Sort, and Limit
+        SELECT CONCAT(title, " - ", released_year) AS "summary" FROM books ORDER BY released_year DESC LIMIT 3;
+    
+    search for author last name where there is a space
+        SELECT title, author_lname FROM books WHERE author_lname LIKE "% %";
+        
+    print the three lowest stock_quantity with released_year and title
+        SELECT title, released_year, stock_quantity FROM books ORDER BY stock_quantity LIMIT 3;
+        
+    Sort every book by author last name then by book. 
+        SELECT title, author_lname FROM books ORDER BY author_lname, title;
+        
+    Yell fav authors name, sort by last name, make each statment distinct, and rename the column.
+        SELECT DISTINCT CONCAT("My Favorite Author is ", author_fname, " ", author_lname) AS yell FROM books ORDER BY author_lname;
+
+AGGREGATE FUNCTIONS: combine data in order to get meaning out of it, kind of like excel
+
+COUNT
+    SELECT COUNT(*) FROM [table name];
+    
+    **if we want to make it distinct
+    SELECT COUNT(DISTINCT value) FROM [table name];
+    
+    **if we want to check multiple fields in case we have same first or same last name
+    SELECT COUNT(DISTINCT value1, value2) FROM [table name];
+    
+    **if we want to use LIKE in the COUNT
+    SELECT COUNT(*) FROM [table name] WHERE value LIKE "%keyword%";
+    
+GROUP BY : this is a weird one. the data is now grouped, but visually we only see the first value, we can now COUNT things like how many books one Author wrote
+    
+        SELECT author_lname, COUNT(*) FROM books GROUP BY author_lname;
+        
+        **group by multiple things and print out result
+        SELECT author_fname, author_lname, COUNT(*) FROM books GROUP BY author_lname, author_fname;
+        
+        **see how many titles were released in that year
+        SELECT released_year,  COUNT(*) FROM books GROUP BY released_year;
+        
+        **CONCATINATING and GROUPING BY
+        SELECT CONCAT("In ", released_year, " ", COUNT(*), " book(s) released") FROM books GROUP BY released_year;
+
+MIN and MAX
+    SELECT MIN(value) FROM [table name];
+    
+    **example
+    SELECT MIN(released_year) FROM books;
+    SELECT MAX(released_year) FROM books;
+    SELECT MAX(pages) FROM books;
+    
+MIN and MAX : to actually get good results 
+
+    SELECT value FROM [table name] WHERE value = (SELECT MIN/MAX(value) FROM [table name]);
+    
+    **example
+    SELECT * FROM books WHERE pages = (SELECT MAX(pages) FROM books);
+    SELECT title FROM books WHERE pages = (SELECT MAX(pages) FROM books);
+    SELECT title FROM books WHERE pages = (SELECT MIN(pages) FROM books);
+    
+    --side note: if you do an ORDER BY and LIMIT 1 it will be faster - instead of using MIN and MAX
+
+using GROUP BY and MIN/MAX
+    
+    task: first year each author published their book
+    SELECT author_fname, author_lname, MIN(released_year) FROM books GROUP BY author_lname, author_fname;
+    SELECT MAX(pages),author_fname, author_lname  FROM books GROUP BY author_fname, author_lname;
+    
+    **with some CONCAT
+    SELECT CONCAT(author_fname, " ", author_lname) AS author, MAX(pages) AS "longest book" FROM books GROUP BY author_lname, author_fname;
+
+SUM
+    SELECT SUM(value) FROM [table name];
+    
+    **using it with GROUP BY
+    SELECT author_lname, author_fname, SUM(pages) FROM books GROUP BY author_lname, author_fname;
+
+AVG
+    SELECT AVG(value) FROM [table name];
+    
+    **with CONCAT and an ALIAS
+    SELECT CONCAT("There are ", COUNT(*), " books, and the average page length is ", AVG(pages)) AS "average" FROM books;
+    
+    **stock quantity of books released each year
+    SELECT AVG(stock_quantity) FROM books GROUP BY released_year;
+    SELECT released_year, AVG(stock_quantity) FROM books GROUP BY released_year;
+    SELECT author_fname, author_lname, AVG(pages) FROM books GROUP BY author_lname, author_fname;
+
+
+EXERCISES
+    **Print out how many books were released each year 
+    SELECT released_year,COUNT(*) FROM books GROUP BY released_year;
+    **Total number of books in stock
+    SELECT SUM(stock_quantity) FROM books;
+    **Find average released year for each author
+    SELECT author_fname, author_lname, AVG(released_year) FROM books GROUP BY author_fname, author_lname;
+    **find and CONCAT full name of author who wrote the longest book
+    SELECT CONCAT(author_fname, " ", author_lname) AS "wrote longest book", pages FROM books WHERE pages = (SELECT MAX(pages) FROM books);
+    
+    **my failed attempt
+    SELECT released_year AS "year" DESC, COUNT(*) AS "# books", AVG(pages) AS "avg pages" FROM books GROUP BY released_year;
+    **correct answer
+    SELECT released_year AS "year", COUNT(*) AS "# books", AVG(pages) AS "avg pages" FROM books GROUP BY released_year;

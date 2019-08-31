@@ -1,0 +1,127 @@
+STRINGS
+    (MAX 255 CHARACTERS)
+
+VARCHAR(number)     - This can have up to a specified number of characters
+
+CHAR(number)        - This always has the same number of characters 
+    CHAR is faster than VARCHAR. Used for fixed lenghts like State Abbreviatinos, Yes/No "Y/N", Sex: M/F.
+
+
+NUMBERS
+
+INT                                                                     - Whole number
+
+DECIMAL(total number of digits,  num of digits after decimal point)     - This will store numbers after the decimal point
+    DECIMAL(5,2) = up to 5 digits in the total number, and two digits after point. = 99999.99 = 33.44
+    DECIMAL(2,3) = 22.333 = 96.534
+    DECIMAL point is exact
+
+FLOAT is approximate. 
+    Store larger number using less space, but comes at the cost of precision. Float is not as accurate as decimal.
+    This loses precision at 7 characters.
+
+DOUBLE
+    Basically double the precision of FLOAT, it loses precision at 14 characters.
+    
+
+DATES & TIMES
+
+DATE
+    Stores a date without a time
+    FORMAT: YYYY-MM-DD
+    
+TIME
+    Stores values with a Time but no Date
+    FORMAT: HH:MM:SS
+
+DATETIME
+    Stores values with Date and Time
+    
+The following will result in NULL if those values aren't there. 
+
+    DAY()
+        DAY(YYYY-MM-DD); = DD
+    
+    DAYNAME()
+        DAYNAME(YYYY-MM-DD) = "Monday" or another day 
+    
+    DAYOFWEEK()
+        DAYOFWEEK(YYYY-MM-DD) = 1-7
+        
+    DAYOFYEAR()
+        DAYOFYEAR(YYYY-MM-DD) = Which day of the year it was
+        
+    MONTH()
+        MONTH(YYYY-MM-DD) = 1-12
+    
+    MONTHNAME()
+        MONTHNAME(YYYY-MM-DD) = "January" or another month
+    
+    MINUTE()
+        MINUTE(HH:MM:SS) = Whatever is in the minute. 
+    
+    We can make a CONCAT by extracting some of the values. 
+    But we can use a special method called DATE_FORMAT();
+        https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_date-format
+    
+    SELECT DATE_FORMAT('2009-10-04 22:23:00', '%W %M %Y');
+    **example
+    SELECT DATE_FORMAT(birthdate, "%W %M %Y");
+    SELECT DATE_FORMAT(birthdate, " was born on a %D") FROM people;
+    SELECT DATE_FORMAT(birthdate, "%m/%d/%Y") FROM people;
+    
+    CURDATE()   - gives current date
+    CURTIME()   - gives current time
+    NOW()       - gives current datetime
+    
+    **example - inserting new person into table at the current date and time
+    INSERT INTO people (name, birthdate, birthtime, birthdt) VALUES ("Microwave", CURDATE(), CURTIME(), NOW());
+
+DATE MATH
+    https://dev.mysql.com/doc/refman/5.5/en/date-and-time-functions.html
+    
+    DATEDIFF()
+    SELECT name, birthdate, CURDATE(), DATEDIFF(CURDATE(), birthdate) FROM people; - Will give how many days from birthdate to CURDATE();
+    SELECT DATEDIFF(CURDATE(), birthdate) FROM people;
+    
+    DATE_ADD() & DATE_SUB() - uses INTERVAL keyword to add or subtract from the date
+    SELECT birthdate,  DATE_ADD(birthdate,INTERVAL 1 DAY) FROM people;
+    
+    +/-
+    SELECT birthdt, birthdt + INTERVAL 15 MONTH + INTERVAL 10 HOUR FROM people;
+    
+TIMESTAMP
+    Adding in Timestamps to our tables 
+    TIMESTAMP takes up less space than DATETIME. It 4 bytes vs 8 bytes for DATETIME and makes a difference when we have a lot of users.
+    
+    **creating a comments table with a default timestamp of when it was created
+    CREATE TABLE comments (content VARCHAR(100), created_at TIMESTAMP DEFAULT NOW());
+        **give it values
+        INSERT INTO comments (content) VALUES ("lol what a funny article");
+        INSERT INTO comments (content) VALUES ("I found this offensive");
+        **only inserting one value because created_at is defaulted to NOW as a TIMESTAMP. 
+          if we insert these at different time we will see different timestamps. 
+          it automatically stores the items by what they were created at because of the nature of the comments
+          but we can reverse it like this
+          SELECT * FROM comments ORDER BY created_at DESC;
+    
+    **creating a table that give comments a TIMESTAMP and UPDATEs that timestamp when it is modified
+    CREATE TABLE comments2 (content VARCHAR(100), changed_at TIMESTAMP DEFAULT NOW() ON UPDATE CURRENT_TIMESTAMP);
+    UPDATE comments2 SET content="This is an update test" WHERE content="LOL that was a great show!";
+        **now we can order it by changed_at columns. 
+          
+        
+EXERCISES
+
+    Print out current day of the week: The Number
+    SELECT DAYOFWEEK(CURDATE());
+    
+    Print out current day of the week: The Day Name
+    SELECT DAYNAME(CURDATE());
+    
+    Print ouf the current date using this format: mm/dd/yy
+    SELECT DATE_FORMAT(CURDATE(), "%m %d %Y");
+    
+    Print out the current dat and time using this format: January 2 at 3:15
+    SELECT DATE_FORMAT(NOW(), "%M %D at %H:%i");
+    
